@@ -1,0 +1,478 @@
+{
+  "universe": 1,
+  "refresh_rate": 30,
+  "non_fading_channels": [6, 7, 8, 14, 15, 16],
+  "mqtt": {
+    "host": "10.0.16.40",
+    "port": 1883,
+    "username": "tikitv",
+    "password": "TikiTV",
+    "base_topic": "lighting/tikitv",
+    "discovery_prefix": "homeassistant",
+    "subscriptions": ["command", "set_scene"],
+    "entities": {
+      "current_scene": {
+        "component": "sensor",
+        "name": "TikiTV Current Scene",
+        "state_topic": "lighting/tikitv/current_scene",
+        "icon": "mdi:lightbulb",
+        "unique_id": "tikitv_current_scene",
+        "json_attributes_topic": "{{ value_json.scene }}",
+        "value_template": "{{ value_json.scene }}"
+      },
+      "scene_selector": {
+        "component": "select",
+        "name": "TikiTV Scene Selector",
+        "state_topic": "lighting/tikitv/current_scene",
+        "command_topic": "lighting/tikitv/set_scene",
+        "icon": "mdi:play",
+        "unique_id": "tikitv_scene_selector",
+        "options": []
+      },
+      "command_request": {
+        "component": "text",
+        "name": "TikiTV Command to HASS",
+        "state_topic": "lighting/tikitv/command",
+        "icon": "mdi:play",
+        "unique_id": "tikitv_cmd_request"
+      }
+    }
+  },
+  "fixtures": [
+    {
+      "name": "WashSouth",
+      "address": 1,
+      "channels": 8,
+      "assignments": {
+        "dimmer": 0,
+        "red": 1,
+        "green": 2,
+        "blue": 3,
+        "white": 4,
+        "strobe": 5,
+        "function": 6,
+        "functionspeed": 7
+      }
+    },
+    {
+      "name": "WashNorth",
+      "address": 9,
+      "channels": 8,
+      "assignments": {
+        "dimmer": 0,
+        "red": 1,
+        "green": 2,
+        "blue": 3,
+        "white": 4,
+        "strobe": 5,
+        "function": 6,
+        "functionspeed": 7
+      }
+    },
+    {
+      "name": "ParNorth",
+      "address": 17,
+      "channels": 8,
+      "assignments": {
+        "dimmer": 0,
+        "red": 1,
+        "green": 2,
+        "blue": 3,
+        "white": 4,
+        "strobe": 5,
+        "function": 6,
+        "functionspeed": 7
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "name": "bright yellow",
+      "values": {
+        "dimmer": 255,
+        "red": 255,
+        "green": 255,
+        "blue": 0,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "bright turquoise",
+      "values": {
+        "dimmer": 255,
+        "red": 51,
+        "green": 255,
+        "blue": 51,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "bright orange",
+      "values": {
+        "dimmer": 255,
+        "red": 255,
+        "green": 80,
+        "blue": 0,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "medium orange",
+      "values": {
+        "dimmer": 54,
+        "red": 255,
+        "green": 38,
+        "blue": 0,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "dim red",
+      "values": {
+        "dimmer": 54,
+        "red": 255,
+        "green": 19,
+        "blue": 0,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "magenta purple",
+      "values": {
+        "dimmer": 255,
+        "red": 36,
+        "green": 0,
+        "blue": 87,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "deep purple",
+      "values": {
+        "dimmer": 255,
+        "red": 12,
+        "green": 0,
+        "blue": 85,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "slightly brighter purple",
+      "values": {
+        "dimmer": 255,
+        "red": 22,
+        "green": 0,
+        "blue": 85,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "dark purple",
+      "values": {
+        "dimmer": 54,
+        "red": 12,
+        "green": 0,
+        "blue": 80,
+        "white": 0,
+        "strobe": 0,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "lightning flash",
+      "values": {
+        "dimmer": 255,
+        "red": 106,
+        "green": 109,
+        "blue": 255,
+        "white": 255,
+        "strobe": 249,
+        "function": 0,
+        "functionspeed": 0
+      },
+      "fixtures": [
+        { "name": "WashNorth" },
+        { "name": "WashSouth" },
+        { "name": "ParNorth" }
+      ]
+    },
+    {
+      "name": "blackout",
+      "channels": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      }
+    }
+  ],
+
+  "sequences": [
+    {
+      "name": "Daylight",
+      "loop": true,
+      "priority": 0,
+      "scenes": [
+        { "scene": "bright yellow", "duration": 5.0, "transition": 0 },
+        { "scene": "bright turquoise", "duration": 10, "transition": 10 },
+        { "scene": "bright yellow", "duration": 5.0, "transition": 10 }
+      ]
+    },
+    {
+      "name": "Evening_golden_hour",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "bright yellow", "duration": 5.0, "transition": 0 },
+        { "scene": "bright orange", "duration": 10, "transition": 45 }
+      ]
+    },
+    {
+      "name": "Sunset",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "bright orange", "duration": 5, "transition": 0 },
+        { "scene": "medium orange", "duration": 8, "transition": 5 },
+        { "scene": "dim red", "duration": 5.0, "transition": 5 },
+        { "scene": "magenta purple", "duration": 15, "transition": 5 }
+      ]
+    },
+    {
+      "name": "Twilight",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "magenta purple", "duration": 5.0, "transition": 0 },
+        { "scene": "deep purple", "duration": 10, "transition": 45 }
+      ]
+    },
+    {
+      "name": "Night",
+      "loop": true,
+      "priority": 0,
+      "scenes": [
+        { "scene": "deep purple", "duration": 10, "transition": 30 },
+        {
+          "scene": "slightly brighter purple",
+          "duration": 10,
+          "transition": 30
+        },
+        { "scene": "deep purple", "duration": 10, "transition": 30 }
+      ]
+    },
+    {
+      "name": "Volcano",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "bright orange", "duration": 1, "transition": 0.3 },
+        { "scene": "medium orange", "duration": 1, "transition": 3 },
+        { "scene": "dim red", "duration": 2, "transition": 4 },
+        { "scene": "medium orange", "duration": 2, "transition": 4 },
+        { "scene": "dim red", "duration": 2, "transition": 4 },
+        { "scene": "dark purple", "duration": 1, "transition": 6 },
+        { "scene": "deep purple", "duration": 1, "transition": 6 }
+      ]
+    },
+    {
+      "name": "Lightning",
+      "loop": false,
+      "priority": 10,
+      "scenes": [
+        { "scene": "lightning flash", "duration": 0.03, "transition": 0 },
+        { "scene": "blackout", "duration": 0.15, "transition": 0 },
+        { "scene": "lightning flash", "duration": 0.1, "transition": 0 },
+        { "scene": "blackout", "duration": 0.25, "transition": 0 },
+        { "scene": "lightning flash", "duration": 0.1, "transition": 0 },
+        { "scene": "blackout", "duration": 2, "transition": 0 }
+      ]
+    },
+    {
+      "name": "Sunrise",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "magenta purple", "duration": 5.0, "transition": 5 },
+        { "scene": "dim red", "duration": 5.0, "transition": 5 },
+        { "scene": "medium orange", "duration": 10, "transition": 5 },
+        { "scene": "bright orange", "duration": 5, "transition": 0 }
+      ]
+    },
+    {
+      "name": "Morning_golden_hour",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "bright orange", "duration": 10, "transition": 45 },
+        { "scene": "bright yellow", "duration": 5.0, "transition": 0 }
+      ]
+    }
+  ],
+
+  "playlists": [
+    {
+      "name": "volcano_loop.mov",
+      "triggers": [
+        {
+          "offset": 2,
+          "command": "mqtt current_scene {\"scene\": \"show_start\"}"
+        },
+        { "offset": 2, "command": "play Daylight" },
+        { "offset": 60, "command": "play Daylight" },
+        { "offset": 120, "command": "play Daylight" },
+        { "offset": 180, "command": "play Daylight" },
+        { "offset": 240, "command": "play Daylight" },
+        { "offset": 300, "command": "play Daylight" },
+        { "offset": 360, "command": "play Daylight" },
+        { "offset": 420, "command": "play Daylight" },
+        { "offset": 480, "command": "play Daylight" },
+        { "offset": 540, "command": "play Daylight" },
+        { "offset": 600, "command": "play Daylight" },
+        { "offset": 660, "command": "play Daylight" },
+        { "offset": 720, "command": "play Daylight" },
+        { "offset": 780, "command": "play Daylight" },
+        { "offset": 840, "command": "play Daylight" },
+        { "offset": 900, "command": "play Daylight" },
+        { "offset": 960, "command": "play Daylight" },
+        { "offset": 1020, "command": "play Daylight" },
+        { "offset": 1080, "command": "play Daylight" },
+        { "offset": 1140, "command": "play Daylight" },
+        { "offset": 1200, "command": "play Daylight" },
+        { "offset": 1260, "command": "play Daylight" },
+        { "offset": 1320, "command": "play Daylight" },
+        { "offset": 1380, "command": "play Daylight" },
+        { "offset": 1440, "command": "play Evening_golden_hour" },
+        { "offset": 1500, "command": "play Sunset" },
+        { "offset": 1545, "command": "play Twilight" },
+        { "offset": 1560, "command": "play Night" },
+        { "offset": 1620, "command": "play Night" },
+        { "offset": 1680, "command": "play Night" },
+        { "offset": 1740, "command": "play Night" },
+        { "offset": 1758, "command": "stop_with_fade 0.7" },
+        { "offset": 1759, "command": "play Volcano" },
+        { "offset": 1789, "command": "play Night" },
+        { "offset": 1860, "command": "play Night" },
+        { "offset": 1920, "command": "play Night" },
+        { "offset": 1980, "command": "play Night" },
+        { "offset": 2040, "command": "play Night" },
+        { "offset": 2100, "command": "play Night" },
+        { "offset": 2160, "command": "play Night" },
+        { "offset": 2220, "command": "play Night" },
+        { "offset": 2280, "command": "play Night" },
+        { "offset": 2340, "command": "play Night" },
+        { "offset": 2400, "command": "play Night" },
+
+        { "offset": 2460, "command": "play Night" },
+        { "offset": 2520, "command": "play Night" },
+        { "offset": 2580, "command": "play Night" },
+        { "offset": 2610, "command": "stop_with_fade 5" },
+        { "offset": 2620, "command": "play Lightning" },
+        { "offset": 2625, "command": "play Lightning" },
+        { "offset": 2631, "command": "play Lightning" },
+        { "offset": 2639, "command": "play Lightning" },
+        { "offset": 2643, "command": "play Lightning" },
+
+        { "offset": 2647, "command": "play Night" },
+        { "offset": 2700, "command": "play Night" },
+        { "offset": 2760, "command": "play Night" },
+        { "offset": 2820, "command": "play Night" },
+        { "offset": 2880, "command": "play Night" },
+        { "offset": 2940, "command": "play Night" },
+        { "offset": 3000, "command": "play Night" },
+        { "offset": 3060, "command": "play Night" },
+        { "offset": 3090, "command": "play Sunrise" },
+        { "offset": 3120, "command": "play Morning_golden_hour" },
+        { "offset": 3180, "command": "play Daylight" },
+        { "offset": 3240, "command": "play Daylight" },
+        { "offset": 3300, "command": "play Daylight" },
+        { "offset": 3360, "command": "play Daylight" },
+        { "offset": 3420, "command": "play Daylight" },
+        { "offset": 3480, "command": "play Daylight" },
+        { "offset": 3540, "command": "play Daylight" },
+        { "offset": 3600, "command": "play Daylight" }
+      ]
+    }
+  ],
+  "comments": [
+    "# The first lightning strike worked, but the others didn't. Here's how it went:",
+    "# - stop_with_fade worked, and sequence runner ended",
+    "# - lightning fired in a new sequence runner",
+    "# - once lightning ended, 'night' resumed playing",
+    "# - further lightning sequences didn't interrupt night. The 'main' thread thought lightning was still playing"
+  ]
+}
