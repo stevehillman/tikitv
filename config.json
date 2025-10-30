@@ -392,7 +392,7 @@
           "offset": 2,
           "command": "mqtt current_scene {\"scene\": \"show_start\"}"
         },
-        { "offset": 2, "command": "play Daylight" },
+        { "offset": 5, "command": "play Daylight" },
         { "offset": 60, "command": "play Daylight" },
         { "offset": 120, "command": "play Daylight" },
         { "offset": 180, "command": "play Daylight" },
@@ -464,7 +464,8 @@
         { "offset": 3420, "command": "play Daylight" },
         { "offset": 3480, "command": "play Daylight" },
         { "offset": 3540, "command": "play Daylight" },
-        { "offset": 3600, "command": "play Daylight" }
+        { "offset": 3600, "command": "play Daylight" },
+        { "offset": 3605, "command": "vlc seek 0" }
       ]
     }
   ],

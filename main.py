@@ -25,7 +25,7 @@ def main():
 
     vlc_launcher = VLCLauncher(4212,"tikitv")
     vlc_launcher.ensure_running()
-    vlc = VLCClient("10.0.8.111", 4212, "tikitv")
+    vlc = VLCClient("127.0.0.1", 4212, "tikitv")
 
     handler = CommandHandler(engine, config, vlc)
     mqtt_client = MQTTClient(config, handler)

@@ -184,6 +184,9 @@ class DMXEngine:
     def stop_with_fade(self, fade_time):
         safe_log(f"Requesting stop with fade: {fade_time}s")
         self.stop_requested.set_value(fade_time)
+        with self.lock:
+            if fade_time is not None:
+                self.previous_sequence = None
 
     # --------------------------------------------
     # Internal cleanup of finished threads

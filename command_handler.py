@@ -78,11 +78,11 @@ class CommandHandler:
                 self.vlc_client.send_command("volume 256")
                 self.vlc_client.send_command("play")
                 self.vlc_client.send_command("seek 0")
-
+                self.vlc_client.send_command("fullscreen on")
             elif cmd == "shutdown":
                 self.vlc_client.send_command("pause")
+                self.vlc_client.send_command("fullscreen off")
                 self.dmx_engine.stop_with_fade(5)
-
             else:
                 safe_log(f"Unknown command: {cmd}",logging.ERROR)
 
