@@ -3,7 +3,7 @@ import time
 import threading
 import queue
 import paho.mqtt.client as mqtt
-from logger import safe_log
+from logger import safe_log,logging
 from config_loader import ConfigLoader
 
 class MQTTClient:
@@ -18,17 +18,28 @@ class MQTTClient:
                 cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, config: ConfigLoader | None = None, command_handler=None):
+    def __init__(self, command_handler=None):
         if self._initialized:
             return
         self._initialized = True
 
-        self._config = config
-        self._mqtt_config = self._config.get_mqtt_config() or {}
         self._command_handler = command_handler
         self._queue = queue.Queue()  # for queued outbound messages
         self._command_queue = queue.Queue()  # for queued inbound command requests
         self._stop_event = threading.Event()
+
+        self._load_config()
+
+    def _load_config(self):
+        self._config = ConfigLoader()
+        self._mqtt_config = self._config.get_mqtt_config() or {}
+        self._config.subscribe(self.on_config_change)
+
+        # Determine if MQTT is enabled
+        self._enabled = bool(self._mqtt_config and self._mqtt_config.get("host"))
+        if not self._enabled:
+            safe_log("MQTTClient: MQTT disabled (no valid config found)", logging.INFO)
+            return
 
         self.host = self._mqtt_config.get("host", "localhost")
         self.port = self._mqtt_config.get("port", 1883)
@@ -108,6 +119,11 @@ class MQTTClient:
         if topic.endswith("/command"):
             self._command_queue.put((topic,payload))
 
+    def on_config_change(self, config):
+        """ Handle changes to config.json, in case they affect MQTT """
+        self.stop()
+        self._load_config()
+
     def process_pending_commands(self):
         """Interpret MQTT commands and route to DMX CommandHandler."""
         while not self._command_queue.empty():
@@ -132,6 +148,9 @@ class MQTTClient:
 
     def publish(self, topic, message, retain=False):
         """Queue a message to publish (non-blocking)."""
+        if not self._enabled:
+            safe_log(f"MQTTClient disabled: publish({topic}) ignored", logging.DEBUG)
+            return
         payload = message if isinstance(message, str) else json.dumps(message)
         self._queue.put((f"{self.base_topic}/{topic}", payload, retain))
 
@@ -173,8 +192,10 @@ class MQTTClient:
 
     def stop(self):
         """Gracefully stop MQTT client and background thread."""
-        self._stop_event.set()
-        self.client.loop_stop()
-        self.client.disconnect()
-        self._thread.join(timeout=2)
+        if self._enabled:
+            self._stop_event.set()
+            self.client.loop_stop()
+            self.client.disconnect()
+            self._thread.join(timeout=2)
+            self._stop_event.clear()
         safe_log("[MQTT] Client stopped")

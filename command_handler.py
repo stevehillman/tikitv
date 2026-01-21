@@ -2,16 +2,17 @@
 import json
 from mqtt_client import MQTTClient
 from logger import safe_log,logging
+from config_loader import ConfigLoader
 
 
 class CommandHandler:
-    def __init__(self, dmx_engine, sequence_loader, vlc_client):
+    def __init__(self, dmx_engine, vlc_client):
         """
         dmx_engine: instance of DMXEngine
         sequence_loader: instance of ConfigLoader (for accessing loaded sequences)
         """
         self.dmx_engine = dmx_engine
-        self.sequence_loader = sequence_loader
+        self.sequence_loader = ConfigLoader()
         self.vlc_client = vlc_client
 
     def __call__(self, command_str: str):

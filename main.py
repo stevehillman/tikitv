@@ -2,7 +2,6 @@
 
 import time
 
-from simple_dmx_client import SimpleDMXClient
 from dmx_engine import DMXEngine
 from config_loader import ConfigLoader
 from command_handler import CommandHandler
@@ -20,15 +19,14 @@ def main():
     config = ConfigLoader("config.json")
 
     # Initialize DMX client and engine
-    client = SimpleDMXClient()
-    engine = DMXEngine(config, client)
+    engine = DMXEngine()
 
     vlc_launcher = VLCLauncher(4212,"tikitv")
     vlc_launcher.ensure_running()
     vlc = VLCClient("127.0.0.1", 4212, "tikitv")
 
-    handler = CommandHandler(engine, config, vlc)
-    mqtt_client = MQTTClient(config, handler)
+    handler = CommandHandler(engine, vlc)
+    mqtt_client = MQTTClient(handler)
 
     runner = None
 
