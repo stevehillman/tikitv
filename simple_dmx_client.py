@@ -1,6 +1,6 @@
-import sys
+import time
 from array import array
-sys.path.append("/usr/local/Cellar/ola/0.10.9_7/libexec/lib/python3.13/site-packages")
+from logger import safe_log
 
 from ola.ClientWrapper import ClientWrapper
 
@@ -10,6 +10,7 @@ class SimpleDMXClient:
         self.wrapper = ClientWrapper()
         self.client = self.wrapper.Client()
         self.universe = universe
+        self._last_frame = None
 
     def _to_array(self, values):
         """
@@ -28,7 +29,20 @@ class SimpleDMXClient:
 
     def send_dmx(self, values):
         data = self._to_array(values)
+
+        # Skip duplicate frames 
+        if self._last_frame == data:
+            return
+
+        start = time.monotonic()
         # optional callback can be provided as 3rd arg if desired
         # safe_log(f"sending {data} to DMX")
         self.client.SendDmx(self.universe, data)
+        elapsed = time.monotonic() - start
+        if elapsed > 1.0:
+            safe_log(
+                f"WARNING: SendDmx blocked for {elapsed:.2f}s"
+            )
 
+        # Only update last-frame *after* successful send
+        self._last_frame = data
