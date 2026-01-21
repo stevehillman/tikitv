@@ -35,6 +35,8 @@ All settings are stored in `config.json`. A fully configured system is included 
 
 ### Fixtures
 
+Define your DMX lighting fixtures in the `fixtures` array. You should be able to get the assignments from the user manual for your fixtures. The names for the assignments are arbitrary, but must match the names given in the `values` map specified in the Scenes below.
+
 ```json
 "fixtures": [
   {
@@ -51,6 +53,8 @@ All settings are stored in `config.json`. A fully configured system is included 
 - `assignments`: Mapping of channel names to offsets from the start address.
 
 ### Scenes
+
+Scenes are sets of static lighting values that are applied to a predefined set of fixtures. A scene consists of a set of fixtures for the scene, and a set of values to apply to all of those fixtures, with optional override values for individual fixtures. The DMX engine automatically handles transitioning between sequential scenes by fading values linearly
 
 ```json
 "scenes": [
@@ -73,7 +77,7 @@ All settings are stored in `config.json`. A fully configured system is included 
 
 ### Sequences
 
-An array of one or more sequences
+Sequences are built up from an array of one or more scenes, along with timing for how to transition between each scene. Specify an array of one or more sequences
 
 ```json
 "sequences": [
@@ -119,6 +123,8 @@ Playlists are associated with VLC video file names. You must specify an array of
 
 ### MQTT (for Home Assistant integration)
 
+MQTT is a service that allows IoT devices to communicate with each other in a semi-standard way. The DMX controller includes an MQTT client. It is intended for use with Home Assistant, but could be used in any environment that supports MQTT for message passing.
+
 ```json
 "mqtt": {
   "host": "192.168.1.1",
@@ -152,7 +158,9 @@ Playlists are associated with VLC video file names. You must specify an array of
 
 - Ensure VLC is installed (`sudo apt install vlc`).
 - VLC videos can be started in a paused state via the DMX controller.
-- TODO: Configure `vlc_telnet_port` and `password` in `config.json` (not yet implemented).
+- TODO: Configure `vlc_telnet_port` and `password` and the default video file in `config.json`. Currently they are hard-coded
+
+The DMX controller will launch VLC at startup, in a paused state, hidden behind the desktop. When a command is received via MQTT to start playback, VLC starts playing and moves to the foreground. Edit vlc_launcher.py to change the name of the video file it plays by default. To have VLC start playing immediately upon start up, comment out the "--start-paused" line in vlc_launcher.py
 
 ---
 
