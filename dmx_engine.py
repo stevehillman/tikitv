@@ -5,14 +5,15 @@ from sequence import Sequence
 from mqtt_client import MQTTClient
 from logger import safe_log
 from value_event import ValueEvent
+from config_loader import ConfigLoader
 
 # ---------------------------------------------------------------------------
 # DMX Engine
 # ---------------------------------------------------------------------------
 class DMXEngine:
-    def __init__(self, config_loader, client: SimpleDMXClient, fps=30):
-        self.config_loader = config_loader
-        self.client = client
+    def __init__(self, fps=20):
+        self.config_loader = ConfigLoader()
+        self.client = SimpleDMXClient()
         self.fps = fps
         self.lock = threading.Lock()
 
@@ -78,19 +79,6 @@ class DMXEngine:
                 duration = step["duration"]
                 transition = step["transition"]
 
-                if sequence != self.active_sequence:
-                    # Active sequence has changed, break out so we can start the new sequence
-                    break
-                if self.stop_requested.is_set():
-                    safe_log("Stop requested...")
-                    fade_time = self.stop_requested.get_value()
-                    if fade_time is not None:
-                        safe_log(f"Fading out over {fade_time} seconds...")
-                        self._fade_to_scene({}, fade_time)
-                    else:
-                        safe_log("Stopping immediately.")
-                    break
-
                 scene = self.config_loader.get_scene(scene_name)
                 if not scene:
                     print(f"[DMXEngine] Scene '{scene_name}' not found.")
@@ -103,6 +91,20 @@ class DMXEngine:
                 start_time = time.time()
                 while not self.stop_requested.is_set() and (time.time() - start_time < duration):
                     time.sleep(1/self.fps)
+
+                if self.stop_requested.is_set():
+                    safe_log("Stop requested...")
+                    fade_time = self.stop_requested.get_value()
+                    if fade_time is not None:
+                        safe_log(f"Fading out over {fade_time} seconds...")
+                        self._fade_to_scene({}, fade_time)
+                    else:
+                        safe_log("Stopping immediately.")
+                    break
+
+                if sequence != self.active_sequence:
+                    # Active sequence has changed, break out so we can start the new sequence
+                    break
 
             if self.stop_requested.is_set():
                 # Clean up after stop
