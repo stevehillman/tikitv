@@ -29,6 +29,9 @@ def main():
     mqtt_client = MQTTClient(handler)
 
     runner = None
+    last_whole_offset = None
+    fractional_offset = 0.0
+    last_poll_time = time.monotonic()
 
     while True:
         mqtt_client.process_pending_commands()
@@ -40,9 +43,29 @@ def main():
                 if playlist is None:
                     raise ValueError(f"ERROR: No playlist for {current_title}")
                 runner = PlaylistRunner(playlist, handler)
-            offset = vlc.get_time()
-            if offset is not None and runner is not None:
-                runner.check_and_run(offset)
+
+            whole_offset = vlc.get_time()  # integer seconds from VLC
+
+            if whole_offset is not None and runner is not None:
+                now = time.monotonic()
+                elapsed = now - last_poll_time
+                last_poll_time = now
+
+                if last_whole_offset is None or whole_offset != last_whole_offset:
+                    # VLC time advanced (or first read) — reset fractional part
+                    fractional_offset = 0.0
+                    last_whole_offset = whole_offset
+                else:
+                    # Same second — advance fractional offset using real elapsed time
+                    fractional_offset += elapsed
+
+                    # Cap it so we never roll into the next second
+                    if fractional_offset >= 0.999:
+                        fractional_offset = 0.999
+
+                precise_offset = whole_offset + fractional_offset
+
+                runner.check_and_run(precise_offset)
         time.sleep(0.2)
     
 
