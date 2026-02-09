@@ -109,10 +109,32 @@ class ConfigLoader:
             # Load Playlists
             for pl_data in config.get("playlists", []):
                 name = pl_data["name"]
-                triggers = pl_data.get("triggers", [])
+                raw_triggers = pl_data.get("triggers", [])
+
+                processed_triggers = []
+
+                for t in raw_triggers:
+                    offset = float(t["offset"])
+
+                    # Normalize commands → always a list
+                    cmd = t.get("command")
+                    if isinstance(cmd, list):
+                        commands = cmd
+                    else:
+                        commands = [cmd]
+
+                    processed_triggers.append({
+                        "offset": offset,
+                        "commands": commands,
+                        "executed": False
+                    })
+
+                # Sort once at load time (important!)
+                processed_triggers.sort(key=lambda x: x["offset"])
+
                 self.playlists[name] = {
                     "name": name,
-                    "triggers": triggers
+                    "triggers": processed_triggers
                 }
 
             self._last_modified = os.path.getmtime(self.filepath)
