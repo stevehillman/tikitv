@@ -74,6 +74,14 @@ class CommandHandler:
                 if args:
                     self.vlc_client.send_command(args)
 
+            elif cmd == 'vlcfwd' or cmd == 'vlcback':
+                if args and args == int(args):
+                    current_offset = self.vlc_client.get_time()
+                    current_offset = current_offset + args if cmd == 'vlcfwd' else current_offset - args
+                    if current_offset < 0:
+                        current_offset = 0
+                    self.vlc_client.send_command(f"seek {current_offset}")
+
             elif cmd == "startup":
                 # Go through startup process for VLC
                 self.vlc_client.send_command("volume 256")
