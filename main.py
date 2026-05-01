@@ -43,6 +43,7 @@ def main():
                 if playlist is None:
                     raise ValueError(f"ERROR: No playlist for {current_title}")
                 runner = PlaylistRunner(playlist, handler)
+                config.set_current_playlist(playlist.get("name"))
 
             whole_offset = vlc.get_time()  # integer seconds from VLC
 
@@ -67,7 +68,7 @@ def main():
 
                 runner.check_and_run(precise_offset)
         time.sleep(0.2)
-    
+
 
 if __name__ == "__main__":
     main()

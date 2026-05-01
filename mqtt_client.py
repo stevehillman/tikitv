@@ -27,13 +27,13 @@ class MQTTClient:
         self._queue = queue.Queue()  # for queued outbound messages
         self._command_queue = queue.Queue()  # for queued inbound command requests
         self._stop_event = threading.Event()
+        ConfigLoader().subscribe(self.on_config_change)
 
         self._load_config()
 
     def _load_config(self):
         self._config = ConfigLoader()
         self._mqtt_config = self._config.get_mqtt_config() or {}
-        self._config.subscribe(self.on_config_change)
 
         # Determine if MQTT is enabled
         self._enabled = bool(self._mqtt_config and self._mqtt_config.get("host"))

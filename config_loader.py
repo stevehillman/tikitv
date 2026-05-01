@@ -9,6 +9,7 @@ import json
 import os
 import threading
 import time
+import re
 from typing import Any
 from sequence import Sequence
 from scene import Scene
@@ -56,6 +57,7 @@ class ConfigLoader:
         self.playlists = {}
         self.mqtt_config = {}
         self._subscribers = []  # list of callback functions
+        self.current_playlist = None
         self._load_config()
 
         # Start background watcher thread
@@ -132,9 +134,13 @@ class ConfigLoader:
                 # Sort once at load time (important!)
                 processed_triggers.sort(key=lambda x: x["offset"])
 
+                # Load and normalize playlist tags (named offsets)
+                tags = self._normalize_tags(pl_data.get("tags", {}), name)
+
                 self.playlists[name] = {
                     "name": name,
-                    "triggers": processed_triggers
+                    "triggers": processed_triggers,
+                    "tags": tags
                 }
 
             self._last_modified = os.path.getmtime(self.filepath)
@@ -142,6 +148,43 @@ class ConfigLoader:
 
         except Exception as e:
             safe_log(f"[ConfigLoader] Error loading configuration: {e}")
+
+    def _normalize_tags(self, raw_tags: dict, playlist_name: str):
+        """
+        Normalize playlist tags.
+
+        - Lowercase keys
+        - Validate numeric offsets
+        - Ensure offset >= 0
+        """
+
+        if not isinstance(raw_tags, dict):
+            raise ValueError(f"Playlist '{playlist_name}' tags must be a dictionary")
+
+        normalized = {}
+
+        for tag_name, offset in raw_tags.items():
+
+            if not isinstance(tag_name, str):
+                raise ValueError(f"Playlist '{playlist_name}' tag names must be strings")
+
+            key = tag_name.strip().lower()
+
+            try:
+                offset_val = int(offset)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"Playlist '{playlist_name}' tag '{tag_name}' offset must be numeric"
+                )
+
+            if offset_val < 0:
+                raise ValueError(
+                    f"Playlist '{playlist_name}' tag '{tag_name}' offset must be >= 0"
+                )
+
+            normalized[key] = offset_val
+
+        return normalized
 
     def _watch_config_changes(self):
         """Monitor file modification time and reload if it changes."""
@@ -186,3 +229,57 @@ class ConfigLoader:
     
     def get_mqtt_config(self):
         return self.mqtt_config
+    
+    def set_current_playlist(self,name):
+        self.current_playlist = name
+
+    def resolve_tag(self, tag_or_offset) -> int:
+        """
+        Resolve:
+        - float
+        - tag
+        - tag+offset
+        - tag-offset
+        """
+
+        # Direct numeric?
+        try:
+            return int(tag_or_offset)
+        except (TypeError, ValueError):
+            if self.current_playlist is None:
+                raise ValueError("Current playlist is not set. Can not use named tags")
+            pass
+
+        if not isinstance(tag_or_offset, str):
+            raise ValueError("Seek target must be a number or tag string")
+
+        expr = tag_or_offset.strip().lower()
+
+        # Match: tag(+|-)number
+        match = re.match(r'^([a-z0-9_\-]+)([+-]\d+(\.\d+)?)?$', expr)
+        if not match:
+            raise ValueError(f"Invalid seek expression '{tag_or_offset}'")
+
+        tag_key = match.group(1)
+        delta_str = match.group(2)
+
+        playlist = self.playlists.get(self.current_playlist)
+        if not playlist:
+            raise ValueError(f"Unknown playlist '{self.current_playlist}'")
+
+        tags = playlist.get("tags", {})
+        if tag_key not in tags:
+            raise ValueError(
+                f"Tag '{tag_or_offset}' not found in playlist '{self.current_playlist}'"
+            )
+
+        base = tags[tag_key]
+
+        delta = int(delta_str) if delta_str else 0
+
+        final = base + delta
+
+        if final < 0:
+            final = 0
+
+        return final

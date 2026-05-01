@@ -1,5 +1,6 @@
 # command_handler.py
 import json
+import time
 from mqtt_client import MQTTClient
 from logger import safe_log,logging
 from config_loader import ConfigLoader
@@ -73,25 +74,52 @@ class CommandHandler:
                 # Send a command to VLC
                 if args:
                     self.vlc_client.send_command(args)
+                    if args == "next":
+                        # Skipping to the next video, which doesn't automatically start playing
+                        time.sleep(1.4)
+                        self.vlc_client.send_command("volume 192")
+			time.sleep(0.1)
+                        self.vlc_client.send_command("play")
+                        time.sleep(0.2)
+                        self.vlc_client.send_command("fullscreen on")
 
-            elif cmd == 'vlcfwd' or cmd == 'vlcback':
-                if args and args == int(args):
-                    current_offset = self.vlc_client.get_time()
-                    current_offset = current_offset + args if cmd == 'vlcfwd' else current_offset - args
-                    if current_offset < 0:
-                        current_offset = 0
-                    self.vlc_client.send_command(f"seek {current_offset}")
+            elif cmd in ('vlcfwd', 'vlcback'):
+
+                if not args:
+                    safe_log(f"WARNING: {cmd} command ignored - needs an argument")
+                    return
+
+                try:
+                    delta = int(args)   # use float for sub-second precision
+                except ValueError:
+                    safe_log(f"WARNING: {cmd} command ignored - argument must be numeric")
+                    return
+
+                current_offset = self.vlc_client.get_time()
+                new_offset = current_offset + delta if cmd == 'vlcfwd' else current_offset - delta
+                new_offset = max(new_offset,0)
+
+                self.vlc_client.send_command(f"seek {new_offset}")
+
+            elif cmd == 'seek':
+                if args:
+                    offset = self.sequence_loader.resolve_tag(args)
+                    safe_log(f"Seeking to '{args}' at offset {offset} ")
+                    self.vlc_client.send_command(f"seek {offset}")
+                else:
+                    safe_log("WARNING: seek command ignored - needs an argument")
 
             elif cmd == "startup":
                 # Go through startup process for VLC
                 self.vlc_client.send_command("volume 256")
                 self.vlc_client.send_command("play")
                 self.vlc_client.send_command("seek 0")
+                time.sleep(0.2)
                 self.vlc_client.send_command("fullscreen on")
             elif cmd == "shutdown":
                 self.vlc_client.send_command("pause")
                 self.vlc_client.send_command("fullscreen off")
-                self.dmx_engine.stop_with_fade(5)
+                self.dmx_engine.stop_with_fade(2)
             else:
                 safe_log(f"Unknown command: {cmd}",logging.ERROR)
 

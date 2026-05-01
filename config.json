@@ -350,6 +350,24 @@
       ]
     },
     {
+      "name": "Volcano2",
+      "loop": false,
+      "priority": 0,
+      "scenes": [
+        { "scene": "bright orange", "duration": 1, "transition": 0.3 },
+        { "scene": "medium orange", "duration": 1, "transition": 3 },
+        { "scene": "dim red", "duration": 2, "transition": 4 },
+        { "scene": "medium orange", "duration": 2, "transition": 4 },
+        { "scene": "dim red", "duration": 2, "transition": 4 },
+        { "scene": "medium orange", "duration": 1, "transition": 3 },
+        { "scene": "dim red", "duration": 2, "transition": 4 },
+        { "scene": "medium orange", "duration": 2, "transition": 4 },
+        { "scene": "dim red", "duration": 2, "transition": 4 },
+        { "scene": "dark purple", "duration": 1, "transition": 6 },
+        { "scene": "deep purple", "duration": 1, "transition": 6 }
+      ]
+    },
+    {
       "name": "Lightning",
       "loop": false,
       "priority": 10,
@@ -387,12 +405,18 @@
   "playlists": [
     {
       "name": "volcano_loop.mov",
+      "tags": {
+        "volcano": 1758,
+        "lightning": 2613,
+        "sunset": 1500
+      },
       "triggers": [
         {
           "offset": 1,
           "command": [
             "mqtt current_scene {\"scene\": \"show_start\"}",
-            "play Daylight"
+            "play Daylight",
+            "vlc volume 256"
           ]
         },
         { "offset": 1440, "command": "play Evening_golden_hour" },
@@ -400,19 +424,53 @@
         { "offset": 1545, "command": "play Twilight" },
         { "offset": 1560, "command": "play Night" },
         { "offset": 1758, "command": "stop_with_fade 0.7" },
-        { "offset": 1759, "command": "play Volcano" },
+        { "offset": 1759, "command": ["play Volcano", "vlc volume 320"] },
+        { "offset": 1776, "command": "vlc volume 256" },
         { "offset": 1789, "command": "play Night" },
         { "offset": 2610, "command": "stop_with_fade 5" },
         { "offset": 2620, "command": "play Lightning" },
         { "offset": 2625, "command": "play Lightning" },
         { "offset": 2631, "command": "play Lightning" },
-        { "offset": 2639, "command": "play Lightning" },
-        { "offset": 2643, "command": "play Lightning" },
+        { "offset": 2638.5, "command": "play Lightning" },
+        { "offset": 2642.5, "command": "play Lightning" },
         { "offset": 2647, "command": "play Night" },
         { "offset": 3090, "command": "play Sunrise" },
         { "offset": 3120, "command": "play Morning_golden_hour" },
         { "offset": 3180, "command": "play Daylight" },
-        { "offset": 3605, "command": "vlc seek 0" }
+        { "offset": 3605, "command": "vlc next" }
+      ]
+    },
+    {
+      "name": "kikori_loop.mp4",
+      "tags": {
+        "volcano": 1952,
+        "lightning": 2900,
+        "sunset": 1500
+      },
+      "triggers": [
+        {
+          "offset": 1,
+          "command": [
+            "mqtt current_scene {\"scene\": \"show_start\"}",
+            "play Night",
+            "vlc volume 192"
+          ]
+        },
+        { "offset": 118, "command": "play Sunrise" },
+        { "offset": 150, "command": "play Morning_golden_hour" },
+        { "offset": 210, "command": "play Daylight" },
+        { "offset": 1440, "command": "play Evening_golden_hour" },
+        { "offset": 1500, "command": "play Sunset" },
+        { "offset": 1560, "command": "play Twilight" },
+        { "offset": 1620, "command": "play Night" },
+        { "offset": 1954, "command": "stop_with_fade 0.7" },
+        { "offset": 1955, "command": "play Volcano2" },
+        { "offset": 2020, "command": "play Night" },
+        { "offset": 2900, "command": "stop_with_fade 5" },
+        { "offset": 2909, "command": "play Lightning" },
+        { "offset": 2911, "command": "play Lightning" },
+        { "offset": 2915, "command": "play Night" },
+        { "offset": 3580, "command": "vlc next" }
       ]
     }
   ]

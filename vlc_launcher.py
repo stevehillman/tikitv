@@ -37,7 +37,8 @@ class VLCLauncher:
             "--no-video-title-show",
             "--quiet",
             "--start-paused",
-            "/home/pi/Documents/volcano_loop.mov"
+            "/home/pi/Documents/volcano_loop.mov",
+            "/home/pi/Documents/kikori_loop.mp4"
         ]
 
         try:

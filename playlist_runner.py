@@ -11,8 +11,9 @@ class PlaylistRunner:
         """
         self.playlist = playlist
         self.command_handler = command_handler
-        self.fired_triggers = set()  # keep track of offsets we've already handled
         self._last_offset = 0.0
+        for trigger in self.playlist["triggers"]:
+            trigger["executed"] = False
 
     def check_and_run(self, current_offset):
         if not self.playlist:
